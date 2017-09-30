@@ -140,7 +140,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         this.showLoader();
         this.hideError();
 
-        $.getJSON("http://data.police.uk/api/crimes-street/all-crime?lat=" + this.lat + "&lng=" + this.lng + dateString, function(data) {
+        $.getJSON("https://data.police.uk/api/crimes-street/all-crime?lat=" + this.lat + "&lng=" + this.lng + dateString, function(data) {
             self.crimeData = data;
             if(self.crimeData.length > 0) {
                 self.hideError();
