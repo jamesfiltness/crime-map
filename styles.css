@@ -1,0 +1,469 @@
+ html,body,#map-canvas
+{
+  height:100%;
+  margin:0;
+  padding:0;
+}
+
+html
+{
+  height:100%;
+}
+
+body
+{
+  background:transparent;
+  height:100%;
+  margin:0;
+  padding:0;
+}
+
+table
+{
+  height:100%;
+  width:100%;
+}
+
+#map_canvas
+{
+  height:100%;
+}
+
+#intro-overlay
+{
+  background:#fff;
+  height:100%;
+  opacity:0.6;
+  position:fixed;
+  width:100%;
+  z-index:1;
+}
+
+svg {
+  cursor: pointer;
+  margin-left: 20px;
+}
+
+#intro-search
+{
+  background:#fff;
+  margin:0 auto;
+  padding:20px 0 70px;
+  position:relative;
+  top:40px;
+  width:400px;
+  z-index:2;
+}
+
+.loading
+{
+  background:url(ajax-loader.gif) no-repeat;
+  display:none;
+  height:16px;
+  position:absolute;
+  right:15px;
+  top:13px;
+  width:16px;
+}
+
+#month
+{
+  display:inline-block;
+}
+
+.current-location
+{
+  margin-top:30px;
+
+}
+
+#search-area
+{
+  background:transparent;
+  display:block;
+  margin:0 auto;
+  width:320px;
+}
+
+h1
+{
+  -moz-box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  -webkit-box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  color:#444;
+  font-family:Georgia;
+  font-size:20px;
+  margin-bottom:5px;
+  padding:10px;
+  position:relative;
+  width:100%;
+}
+
+#current-location
+{
+  border-top:0;
+  display:block;
+  font-size:15px;
+  right:120px;
+  padding:9px 0px 0 10px;
+  position:absolute;
+  top:40px;
+  margin-top: 32px;
+}
+
+.error-text
+{
+  display:none;
+  font-size:7px;
+  font-weight:700;
+  margin:0 auto;
+  padding:2px;
+  position:absolute;
+  right:12px;
+  top:9px;
+}
+
+.error-text span
+{
+  padding-right:5px;
+}
+
+#top-bar
+{
+
+  display:none;
+  padding:5px 20px;
+  position:fixed;
+  top:0;
+  width:100%;
+  z-index:3;
+}
+
+.postcode:focus
+{
+  border:1px solid #008cbc;
+  outline:0;
+}
+
+#top-bar h4
+{
+  color:#444;
+  float:left;
+  font-size:25px;
+  margin:5px 0;
+}
+
+#top-bar .postcode-form
+{
+  float:right;
+  padding-top:5px;
+}
+
+#bottom-bar
+{
+  bottom:-300px;
+  display:none;
+  position:fixed;
+  width:100%;
+  z-index:3;
+}
+
+.infodiv ul
+{
+  margin:0;
+  padding:0;
+}
+
+.infodiv ul li
+{
+  margin-bottom:5px;
+}
+
+.infodiv ul li span.circle
+{
+  border-radius:50%;
+  display:inline-block;
+  height:10px;
+  margin-right:5px;
+  width:10px;
+}
+
+.infodiv h4
+{
+  line-height:24px;
+}
+
+#map-control
+{
+  width: 90%;
+  margin: 0 5%;
+  left: 0;
+  position:absolute;
+  top:0;
+  z-index:2;
+}
+
+#postcode
+{
+  -moz-box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  -webkit-box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  border:1px solid #fff;
+  box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  float:left;
+  font-family:Georgia;
+  font-size:15px;
+  outline:none;
+  font-size: 15px;
+  padding:10px 20px 10px 9px;
+  width:calc(100% - 100px);
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
+}
+
+.message {
+  display:none;
+}
+
+#submit-button
+{
+    -webkit-border-radius: 0 !important;
+    -moz-border-radius: 0 !important;
+    border-radius: 0 !important;
+  background:#4682B4;
+  border:none;
+  border-bottom:1px solid #4682B4;
+  border-top:0;
+
+  color:#fff;
+  float:left;
+  font-size: 20px;
+  width: 100px;
+  font-family:Georgia;
+  padding:8px 10px 7px 10px;
+}
+
+ #tooltip {
+          display: none;
+          position: absolute;
+          background-color: #fff;
+          border: 1px solid #ccc;
+          padding: 10px;
+         
+
+          z-index: 3;
+        }
+
+        #tooltip p {
+          margin: 0; 
+          padding: 0;
+        }
+
+#details
+{
+
+  background:#fff;
+ border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  box-sizing:border-box;
+  clear:left;
+  display:none;
+  float:left;
+  font-family:Georgia;
+  margin-top:0;
+  padding:5px 10px;
+  width:100%;
+}
+
+#chart {
+  background: #fff;
+  width: 450px;
+ padding: 0 10px;
+ padding-top: 20px;
+ display:none;
+   -moz-box-shadow:0 4px 6px rgba(0,0,0,0.3);
+  -webkit-box-shadow:0 4px 6px rgba(0,0,0,0.3);
+ 
+  box-shadow:0 4px 6px rgba(0,0,0,0.3);
+}
+
+
+
+#month 
+{
+  float: left;
+  margin-left: 10px; 
+  padding-top: 0px; 
+  margin-top: 10px; 
+  font-size: 15px;
+}
+
+@media max-width 767px {
+  .btn
+  {
+    width:100%;
+  }
+}
+
+#details p 
+{
+  width: 320px; 
+  margin: 0 auto;
+}
+
+#details p #no-of-crimes
+{
+  font-size: 30px; 
+  float: left;
+  padding: 0;
+  margin: 0;  
+}
+
+#details p #committed 
+{
+  padding: 11px 0 0 5px; 
+  float: left; 
+  font-size: 16px;
+}
+
+#key,#chart svg,#chart {
+  float: left;
+}
+
+#key li {
+ list-style-type: none;
+ clear: left;
+ font-size: 10px;
+ margin-bottom: 0px;
+ height: 13px;
+}
+
+#key li span {
+  float: left;
+  line-height: 1;
+
+}
+#key li span.circle { 
+    width: 10px;height: 10px;
+    border-radius: 100px;
+    display:block;
+    margin-right: 5px;
+    float: left;
+}
+
+#phone-warning {
+    text-align: center;
+    padding: 0;
+}
+
+ #phone-warning span {
+     margin-right: 5px;
+ }
+
+
+ @media (min-width: 500px) {
+
+#map-control {
+       width: 550px;
+       left: 20px;
+       margin: 0;
+  }
+
+    #phone-warning {
+        display:none;
+        text-align: center;
+        padding: 0;
+    }
+
+    #phone-warning span {
+        margin-right: 5px;
+    }
+
+  h1 {
+    font-size: 20px;
+    padding: 7px;
+    width: 450px;
+  }
+
+  #postcode {
+    width:450px;
+      height: 37px;
+    padding:   5px 200px 5px 5px;
+    font-size: 18px;
+  }
+
+  #submit-button {
+font-size: 16px;
+ padding: 7px 5px 7px 5px;
+
+  }
+
+  .scottish-postcode-msg {
+      display:none;
+  }
+
+  #current-location {
+    right: 110px;
+    top: 32px;
+    font-size: 12px;
+  }
+
+  #current-location span {
+    float: left;
+    margin-right: 5px;
+  }
+
+  #details {
+    width: 450px;
+  }
+
+  .message {
+    display:block;
+  }
+
+  .loading
+{top: 10px;
+}
+
+.error-text
+{
+ 
+  font-size:12px;
+}
+  .scottish-postcode-msg {
+      margin-bottom: 0;
+      -webkit-border-radius: 0;
+      -moz-border-radius: 0;
+      border-radius: 0;
+      width: 450px;
+      padding: 5px 0;
+      font-size: 12px;
+      text-align: center;
+      float: left;
+  }
+
+     .scottish-postcode-msg span {
+      margin-right: 4px;
+     }
+
+     .location-ident {
+         font-weight: bold;
+     }
+
+     #details p#radius-note {
+         font-size: 12px;
+         width: 100%;
+         float: left;
+         clear:left;
+         text-align: center;
+         position: relative;
+         top: -6px;
+     }
+}
+
+
+
+
+
+

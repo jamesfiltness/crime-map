@@ -1,0 +1,138 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>UK Crime Map</title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="UK Crime Map" />
+  <meta property="og:image" content="http://www.jamesfiltness.co.uk/projects/crime-map/og-img.jpg" />
+  <meta property="og:description" content="See crime as recorded by the police where you live or where you are now." />
+
+  <meta property="twitter:card" content="photo" />
+  <meta property="twitter:title" content="UK Crime Map" />
+  <meta property="twitter:image:src" content="http://www.jamesfiltness.co.uk/projects/crime-map/og-img.jpg" />
+  <meta property="twitter:description" content="See crime recorded by the police where you live or in your current location." />
+
+  <link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+  <link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+  <link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+
+</head>
+<body>
+<div id="tooltip"></div>
+
+<div id="map-control">
+  <h1>UK Crime Map <span class="loading"></span><span class="bg-danger text-danger error-text"><span class="glyphicon glyphicon-exclamation-sign"></span><span class="error-msg"></span></span></span></h1>
+  <form class="postcode-form" role="form">
+    <label for="postcode" class="sr-only">Postcode:</label>
+    <input type="text" id="postcode" placeholder="Enter your Postcode">
+    <input type="submit" id="submit-button" value="Search" />
+  </form>
+  <div class="scottish-postcode-msg alert alert-warning"><span class="glyphicon glyphicon-exclamation-sign"></span>Data for Scotland only includes crimes recorded by the Britsh Transport Police</div>
+  <div class="alert alert-warning" role="alert" id="phone-warning"><span class="glyphicon glyphicon-exclamation-sign"></span>This page is best viewed on a desktop or tablet.</div>
+  <div id="details">
+    <p>
+      <span id="no-of-crimes"></span><span id="committed">crimes committed in</span>
+
+      <select id="month">
+        <option value="2017-02">Feb 2017</option>
+        <option value="2017-01">Jan 2017</option>
+        <option value="2016-12">Dec 2016</option>
+        <option value="2016-11">Nov 2016</option>
+        <option value="2016-10">Oct 2016</option>
+        <option value="2016-09">Sep 2016</option>
+        <option value="2016-08">Aug 2016</option>
+        <option value="2016-07">Jul 2016</option>
+        <option value="2016-06">Jun 2016</option>
+        <option value="2016-05">May 2016</option>
+        <option value="2016-04">Apr 2016</option>
+        <option value="2016-03">Mar 2016</option>
+        <option value="2016-02">Feb 2016</option>
+        <option value="2016-01">Jan 2016</option>
+        <option value="2015-12">Dec 2015</option>
+        <option value="2015-11">Nov 2015</option>
+        <option value="2015-10">Oct 2015</option>
+        <option value="2015-09">Sep 2015</option>
+        <option value="2015-08">Aug 2015</option>
+        <option value="2015-07">Jul 2015</option>
+        <option value="2015-06">Jun 2015</option>
+        <option value="2015-05">May 2015</option>
+        <option value="2015-04">Apr 2015</option>
+        <option value="2015-03">Mar 2015</option>
+        <option value="2015-02">Feb 2015</option>
+        <option value="2015-01">Jan 2015</option>
+        <option value="2014-12">Dec 2014</option>
+        <option value="2014-11">Nov 2014</option>
+        <option value="2014-10">Oct 2014</option>
+        <option value="2014-09">Sep 2014</option>
+        <option value="2014-08">Aug 2014</option>
+        <option value="2014-07">Jul 2014</option>
+        <option value="2014-06">Jun 2014</option>
+        <option value="2014-05">May 2014</option>
+        <option value="2014-04">Apr 2014</option>
+        <option value="2014-03">Mar 2014</option>
+        <option value="2014-02">Feb 2014</option>
+        <option value="2014-01">Jan 2014</option>
+        <option value="2013-12">Dec 2013</option>
+        <option value="2013-11">Nov 2013</option>
+        <option value="2013-10">Oct 2013</option>
+        <option value="2013-09">Sep 2013</option>
+        <option value="2013-08">Aug 2013</option>
+        <option value="2013-07">Jul 2013</option>
+        <option value="2013-06">Jun 2013</option>
+        <option value="2013-05">May 2013</option>
+        <option value="2013-04">Apr 2013</option>
+        <option value="2013-03">Mar 2013</option>
+        <option value="2013-02">Feb 2013</option>
+        <option value="2013-01">Jan 2013</option>
+        <option value="2012-12">Dec 2012</option>
+        <option value="2012-11">Nov 2012</option>
+        <option value="2012-10">Oct 2012</option>
+        <option value="2012-09">Sep 2012</option>
+        <option value="2012-08">Aug 2012</option>
+        <option value="2012-07">Jul 2012</option>
+        <option value="2012-06">Jun 2012</option>
+        <option value="2012-05">May 2012</option>
+        <option value="2012-04">Apr 2012</option>
+        <option value="2012-03">Mar 2012</option>
+        <option value="2012-02">Feb 2012</option>
+        <option value="2012-01">Jan 2012</option>
+        <option value="2012-12">Dec 2011</option>
+        <option value="2012-11">Nov 2011</option>
+        <option value="2012-10">Oct 2011</option>
+        <option value="2012-09">Sep 2011</option>
+        <option value="2012-08">Aug 2011</option>
+        <option value="2012-07">Jul 2011</option>
+        <option value="2012-06">Jun 2011</option>
+        <option value="2012-05">May 2011</option>
+        <option value="2012-04">Apr 2011</option>
+        <option value="2012-03">Mar 2011</option>
+        <option value="2012-02">Feb 2011</option>
+        <option value="2012-01">Jan 2011</option>
+      </select>
+
+    </p>
+    <p id="radius-note"><span>(within a mile radius of <span class="location-ident"></span>)</span></p>
+  </div>
+  <div id="chart"></div>
+</div>
+<div id="map_canvas"></div>
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>
+<script type="text/javascript" src="crimemap.js"></script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+          m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-65197205-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
