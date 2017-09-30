@@ -31,7 +31,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
     CrimeMap.prototype.getLastUpdated = function() {
         var self = this;
         this.lastUpdated = {};
-        $.getJSON("http://data.police.uk/api/crime-last-updated", function(data) {
+        $.getJSON("https://data.police.uk/api/crime-last-updated", function(data) {
             self.lastUpdated.rawDate = new Date(data.date);
             if (self.lastUpdated.rawDate !== 'Invalid Date') {
                 self.lastUpdated.curr_month_num = self.lastUpdated.rawDate.getMonth() + 1; //Months are zero based
