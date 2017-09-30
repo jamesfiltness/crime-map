@@ -1,5 +1,5 @@
 # Crime Map
 
-UK Crime data mapped by postcode: https://jamesfiltness.github.io/crime-map/
+UK Police Crime data mapped by postcode: https://jamesfiltness.github.io/crime-map/
 
 ![Crime Map](/screengrab.png)
