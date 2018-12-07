@@ -51,7 +51,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
                 if (genMonth < 10) {
                     genMonth = ('0' + genMonth);
                 }
-                $('#month').prepend('<option value="2017-' + genMonth + '">' + monthNames[+genMonth - 1] + ' 2017</option>');
+                $('#month').prepend('<option value="2018-' + genMonth + '">' + monthNames[+genMonth - 1] + ' 2018</option>');
             }
         }
         $('#month')[0].selectedIndex = 0;
