@@ -20,7 +20,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         this.latLong = {};
         this.markers = [];
         this.crimeData = {};
-        
+
         this.isMobile();
         this.renderMap();
         this.setupListeners();
@@ -37,11 +37,11 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
                 self.lastUpdated.curr_month_num = self.lastUpdated.rawDate.getMonth() + 1; //Months are zero based
                 self.lastUpdated.curr_year_num = self.lastUpdated.rawDate.getFullYear();
             }
-            
+
             self.updateDropdown();
         });
     };
-    
+
     CrimeMap.prototype.updateDropdown = function() {
         var lastStaticMonth = 2;
         if (this.lastUpdated.curr_month_num > lastStaticMonth) {
@@ -51,7 +51,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
                 if (genMonth < 10) {
                     genMonth = ('0' + genMonth);
                 }
-                $('#month').prepend('<option value="2018-' + genMonth + '">' + monthNames[+genMonth - 1] + ' 2018</option>');
+                $('#month').prepend('<option value="2019-' + genMonth + '">' + monthNames[+genMonth - 1] + ' 2019</option>');
             }
         }
         $('#month')[0].selectedIndex = 0;
@@ -89,7 +89,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
             e.preventDefault();
             self.hideUi();
             postcode = $(this).find('#postcode').val();
-            
+
             if (self.validatePostcode(postcode)) {
                 self.hideError($(this));
                 if(self.isScottishPostcode(postcode)) {
@@ -175,7 +175,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
             mostCommonCrime = Object.keys(this.categories).sort(function(a, b) {
             return -(self.categories[a] - self.categories[b])
         });
-        
+
         this.buildPie();
         mostCommonCrime = mostCommonCrime[0].replace(/\-/g, '');
 
@@ -197,13 +197,13 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
             pie,
             svg,
             g;
-        
+
         $('#chart').empty();
 
         for(i in this.categories) {
             data.push({'cat': i, 'no': this.categories[i]});
         }
-         
+
         color = d3.scale.ordinal()
         .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
 
@@ -220,7 +220,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         .attr("height", height)
         .append("g")
         .attr("transform", "translate(" + width / 1.9 + "," + height / 2.2 + ")");
-        
+
         g = svg.selectAll(".arc")
         .data(pie(data))
         .enter().append("g")
@@ -240,7 +240,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         .on('mouseout', function(d) {
             $("#tooltip").html('').hide();
         });
-        
+
         g.append("path")
             .attr("d", arc)
             .style("fill", function(d) { return categories[d.data.cat.replace(/\-/g, '')].tooltip;  });
@@ -282,7 +282,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
             }
             $('#chart').append(key);
     };
-    
+
     /* This method should definitely not be doing so much - it should be refactored */
     CrimeMap.prototype.plotCrimes = function() {
         var crimes = this.crimes,
@@ -311,7 +311,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         for (i in crimes) {
             mode = {};
             size = crimes[i].length;
-                
+
             //work out the mean of the returned crimes
             for (j = 0; j < size; ++j) {
                     crimeType = crimes[i][j].category;
@@ -328,14 +328,14 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
                     mode[crimeType] = curr + 1;
                 }
             }
-            
+
             //sort the data for the location numerically - greatest to smallest
             co = Object.keys(mode).sort(function(a, b) {
                 return -(mode[a] - mode[b])
             });
-            
+
             loc = new google.maps.LatLng(crimes[i][0].location.latitude, crimes[i][0].location.longitude);
-            
+
             list = this.buildLocationCrimeList(mode, co);
 
             var currMonth = $('#month option:selected').text();
@@ -359,7 +359,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
                 content: crimes[i].markerContent,
                 anchorPoint: point
             });
-            
+
             google.maps.event.addListener(marker, this.ev, (function(pointer, bubble, mode) {
                 return function() {
                     self.bubbleChart(bubble);
@@ -372,7 +372,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
                     bubble.close(self.map);
                 }
             })(marker, infowindow));
-          
+
             this.panAndZoom();
         }
     };
@@ -433,7 +433,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
     CrimeMap.prototype.isMobile = function() {
           this.isMob = false;
           this.ev = 'mouseover';
-          
+
       if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
           this.isMob = true;
           this.ev = 'click';
