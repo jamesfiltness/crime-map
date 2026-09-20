@@ -24,7 +24,121 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         this.isMobile();
         this.renderMap();
         this.setupListeners();
+        this.loadAvailableDates();
         this.enableGeoLocation();
+    };
+
+    /*
+        The police API only serves a rolling window of months (currently the last
+        three years) so the range is asked for rather than hard coded - see
+        https://data.police.uk/docs/method/crimes-street-dates/
+    */
+    CrimeMap.prototype.loadAvailableDates = function() {
+        var self = this;
+
+        $.getJSON('https://data.police.uk/api/crimes-street-dates', function(data) {
+            var dates = [],
+                i;
+
+            for (i = 0; i < data.length; i++) {
+                if (/^\d{4}-\d{2}$/.test(data[i].date)) {
+                    dates.push(data[i].date);
+                }
+            }
+
+            self.buildDateSelects(dates.length ? dates : self.fallbackDates());
+        }).fail(function() {
+            self.buildDateSelects(self.fallbackDates());
+        });
+    };
+
+    //If the availability lookup fails, guess at the last 3 years allowing for
+    //the couple of months the police take to publish
+    CrimeMap.prototype.fallbackDates = function() {
+        var dates = [],
+            date = new Date(),
+            i;
+
+        date.setDate(1);
+        date.setMonth(date.getMonth() - 2);
+
+        for (i = 0; i < 36; i++) {
+            dates.push(date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2));
+            date.setMonth(date.getMonth() - 1);
+        }
+
+        return dates;
+    };
+
+    CrimeMap.prototype.buildDateSelects = function(dates) {
+        var self = this,
+            years = [],
+            i,
+            year;
+
+        //newest first, as the most recent month is the one most people want
+        this.availableDates = dates.slice().sort().reverse();
+
+        for (i = 0; i < this.availableDates.length; i++) {
+            year = this.availableDates[i].split('-')[0];
+            if (years.indexOf(year) === -1) {
+                years.push(year);
+            }
+        }
+
+        $('#year').empty();
+        for (i = 0; i < years.length; i++) {
+            $('#year').append($('<option>').val(years[i]).text(years[i]));
+        }
+
+        $('#year').val(years[0]);
+        this.populateMonths(years[0]);
+
+        $('#year').off('change.crimemap').on('change.crimemap', function() {
+            self.populateMonths($(this).val());
+            self.getCrimeData(self.selectedDate());
+        });
+
+        $('#month').off('change.crimemap').on('change.crimemap', function() {
+            self.getCrimeData(self.selectedDate());
+        });
+    };
+
+    //Only the months the API actually holds data for in the given year
+    CrimeMap.prototype.populateMonths = function(year) {
+        var previous = $('#month').val(),
+            months = [],
+            i,
+            month;
+
+        for (i = 0; i < this.availableDates.length; i++) {
+            if (this.availableDates[i].split('-')[0] === year) {
+                months.push(this.availableDates[i].split('-')[1]);
+            }
+        }
+
+        $('#month').empty();
+        for (i = 0; i < months.length; i++) {
+            month = months[i];
+            $('#month').append($('<option>').val(month).text(monthNames[parseInt(month, 10) - 1]));
+        }
+
+        //hold the month steady when switching year where we can
+        $('#month').val(months.indexOf(previous) !== -1 ? previous : months[0]);
+    };
+
+    CrimeMap.prototype.selectedDate = function() {
+        var year = $('#year').val(),
+            month = $('#month').val();
+
+        return (year && month) ? year + '-' + month : '';
+    };
+
+    CrimeMap.prototype.selectedDateLabel = function() {
+        var month = $('#month option:selected').text(),
+            year = $('#year option:selected').text();
+
+        return $.trim(month + ' ' + year);
     };
 
     //Render the initial map on the River Thames - ala Eastenders intro
@@ -83,12 +197,8 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
             self.hideError();
             navigator.geolocation.getCurrentPosition(function(position) {
                 self.updateLocationMessage('your current location');
-                self.getCrimeData($('#month').val(),position);
+                self.getCrimeData(self.selectedDate(),position);
             });
-        });
-
-        $('#month').on('change', function() {
-            self.getCrimeData($(this).val());
         });
 
         $("input:text:visible:first").focus();
@@ -149,7 +259,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         this.buildPie();
         mostCommonCrime = mostCommonCrime[0].replace(/\-/g, '');
 
-        $('#crime-type').text(categories[mostCommonCrime].name).css('color', categories[mostCommonCrime].tooltip);
+        $('#crime-type').text(categoryLabel(mostCommonCrime)).css('color', categoryColour(mostCommonCrime));
 
         if(!this.isMobile()) {
             $('#details').show();
@@ -213,7 +323,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
 
         g.append("path")
             .attr("d", arc)
-            .style("fill", function(d) { return categories[d.data.cat.replace(/\-/g, '')].tooltip;  });
+            .style("fill", function(d) { return categoryColour(d.data.cat);  });
 
         g.append("text")
             .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
@@ -229,11 +339,9 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
 
     CrimeMap.prototype.getCircle = function(size, cat) {
         size = size + 4;
-        var colour = categories[cat.replace(/\-/g, '')];
-
         var circle = {
             path: google.maps.SymbolPath.CIRCLE,
-            fillColor: '' + colour.tooltip + '',
+            fillColor: categoryColour(cat),
             fillOpacity: 0.7,
             scale: size,
             strokeColor: '#888',
@@ -242,12 +350,25 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         return circle;
     };
 
+    //The API gives categories as slugs ('anti-social-behaviour') - the key and
+    //the popups should show the proper name
+    function categoryLabel(cat) {
+        var category = categories[cat.replace(/\-/g, '')];
+        return category ? category.name : cat.replace(/\-/g, ' ');
+    }
+
+    //Fall back to grey rather than blowing up if the police add a category
+    function categoryColour(cat) {
+        var category = categories[cat.replace(/\-/g, '')];
+        return category ? category.tooltip : '#999999';
+    }
+
     CrimeMap.prototype.buildKey = function() {
         var key = $('<ul id="key"></ul>'),
             listItem;
 
             for (var i in this.categories) {
-                listItem = $('<li><span class="circle" style="background-color:' + categories[i.replace(/\-/g, '')].tooltip + '"></span><span>'+i.replace(/\-/g, ' ')+'</span></li>');
+                listItem = $('<li><span class="circle" style="background-color:' + categoryColour(i) + '"></span><span>'+ categoryLabel(i) +'</span></li>');
                 key.append(listItem);
             }
             $('#chart').append(key);
@@ -308,7 +429,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
 
             list = this.buildLocationCrimeList(mode, co);
 
-            var currMonth = $('#month option:selected').text();
+            var currMonth = self.selectedDateLabel();
 
             if (size > 1) {
                 crimes[i].markerContent = '<div class="infodiv" style="width: 300px;"><h4><strong>' + size + ' crimes reported ' + crimes[i][0].location.street.name + ' in ' + currMonth + '</strong></h4><br />' + ' ' + list + '</div>'
@@ -354,9 +475,9 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
             singlePlural = 's';
 
         for (i = 0; i < ordered.length; ++i) {
-            currentCat = ordered[i].replace(/\-/g, '');
+            currentCat = categoryColour(ordered[i]);
             modeList[ordered[i]] === 1 ? singlePlural = '' : singlePlural = 's';
-            list += '<li><span class="circle" style="background-color:' + categories[currentCat].tooltip + '"></span>' + modeList[ordered[i]] + ' count' + singlePlural + ' of <span style="color:' + categories[currentCat].tooltip + '">' + ordered[i].replace(/\-/g, ' ') + '</span></li>';
+            list += '<li><span class="circle" style="background-color:' + currentCat + '"></span>' + modeList[ordered[i]] + ' count' + singlePlural + ' of <span style="color:' + currentCat + '">' + categoryLabel(ordered[i]) + '</span></li>';
         }
 
         return '<ul>' + list + '</ul>';
@@ -485,11 +606,11 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         },
         antisocialbehaviour: {
             tooltip: '#679208',
-            name: 'Antisocial behaviour'
+            name: 'Anti-social behaviour'
         },
         criminaldamagearson: {
             tooltip: '#C4AC30',
-            name: 'Criminal Damage or Arson'
+            name: 'Criminal damage and arson'
         },
         violentcrime: {
             tooltip: '#D31900',
@@ -505,15 +626,15 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         },
         publicorder: {
             tooltip: '#7CB490',
-            name: 'Public Order'
+            name: 'Public order'
         },
         publicdisorderweapons: {
             tooltip: 'grey',
-            name: 'Public disorder weapons'
+            name: 'Public disorder and weapons'
         },
         bicycletheft: {
             tooltip: '#680148',
-            name: 'Bicycle Theft'
+            name: 'Bicycle theft'
         },
         drugs: {
             tooltip: '#7DB4B5',
@@ -525,7 +646,7 @@ return i.size=function(n){return arguments.length?(l=n,i):l},i.padding=function(
         },
         possessionofweapons: {
             tooltip: 'brown',
-            name: 'Possession of weopons'
+            name: 'Possession of weapons'
         },
         theftfromtheperson: {
             tooltip: '#DBD8A2',
